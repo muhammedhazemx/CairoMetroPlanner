@@ -88,7 +88,3 @@ Semantic landmarks, labelled controls, contrast-safe line badges, visible focus 
 
 - Station data: Transport for Cairo — Metro GTFS
 - Map tiles: © OpenStreetMap contributors
-
-## Disclaimer
-
-A personal portfolio project for learning and demonstration. Not affiliated with, or endorsed by, the Cairo Metro or the National Authority for Tunnels.
