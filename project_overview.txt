@@ -1,0 +1,94 @@
+========================================================================
+             CAIRO METRO ROUTE PLANNER - PROJECT OVERVIEW
+========================================================================
+
+1. TECH STACK & CORE LIBRARIES
+------------------------------------------------------------------------
+- Core: React 18 + TypeScript + Vite (compiled with esbuild)
+- Styling: Tailwind CSS (with custom utility rules for themes/fonts)
+- State Management: Redux Toolkit (managing route state, search history, language)
+- Maps & Visualization: React-Leaflet + Leaflet (rendering geo-coordinates, polyline paths, station circles, and fit-bounds centering)
+- Fonts: 'Cairo' Google Font (headings/labels) & default system sans-serif
+- Testing: Vitest (unit/integration) & Playwright (End-to-End browser tests)
+
+2. DIRECTORY STRUCTURE
+------------------------------------------------------------------------
+C:\Users\Muhamed Hazem\Desktop\CODE\CVProjects\CairoMetro
+├── playwright.config.ts         # Playwright E2E configuration
+├── tailwind.config.ts           # Brand colors, Cairo font & star-pattern setup
+├── vite.config.ts               # Vite configuration + Vitest setup
+├── scripts/
+│   └── build-data.ts            # Parses raw GTFS data to generate static TS data
+├── tests/
+│   ├── setup.ts                 # Test environment setup
+│   ├── bfs.test.ts              # Unit tests for BFS pathfinding
+│   ├── fare.test.ts             # Unit tests for fare calculations
+│   ├── time.test.ts             # Unit tests for travel time estimations
+│   ├── planner.test.tsx         # Integration tests for UI rendering and flows
+│   └── e2e/
+│       └── plan-route.spec.ts   # Playwright E2E browser tests
+└── src/
+    ├── App.tsx                  # Root wrapper with Redux Store Provider
+    ├── index.css                # Global styles, Tailwind base, and rub-el-hizb star pattern
+    ├── main.tsx                 # App mount entrypoint
+    ├── app/
+    │   ├── hooks.ts             # Typed useSelector / useDispatch hooks
+    │   └── store.ts             # Global Redux Store configuration
+    ├── components/
+    │   ├── LanguageToggle.tsx   # Switch English/Arabic i18n
+    │   ├── LineBadge.tsx        # Styled line labels (L1, L2, L3)
+    │   ├── MetroMap.tsx         # Leaflet map wrapper plotting paths and markers
+    │   ├── RouteTimeline.tsx    # List showing route segments and transfers
+    │   ├── StationPicker.tsx    # A11y keyboard navigable search input autocomplete
+    │   └── SwapButton.tsx       # Swaps origin and destination values
+    ├── data/                    # Parsed datasets from GTFS build scripts
+    │   ├── interchanges.ts      # Sadat, Al-Shohadaa, Attaba mapping
+    │   ├── lines.ts             # L1, L2, L3 coordinates and station sequences
+    │   └── stations.ts          # Unified station list (lat, lon, EN/AR names)
+    ├── features/
+    │   └── planner/
+    │       ├── plannerSlice.ts  # Redux slice for current route and search history
+    │       └── RoutePlanner.tsx # Main dashboard layout (RTL-aware)
+    ├── i18n/
+    │   ├── ar.ts                # Arabic translations dictionary
+    │   ├── en.ts                # English translations dictionary
+    │   └── useTranslation.ts    # React hook for text lookup and language detection
+    ├── lib/
+    │   ├── bfs.ts               # BFS pathfinder with transfer tie-breaker
+    │   ├── fare.ts              # Cairo Metro fare ticket bracket rules
+    │   ├── graph.ts             # Adjacency list graph construction
+    │   └── time.ts              # Travel time estimation utility
+    └── types/
+        ├── line.ts              # Type definition for Metro lines
+        ├── route.ts             # Type definition for Route paths and segments
+        └── station.ts           # Type definition for Station metadata
+
+3. CORE ALGORITHM & ROUTING LOGIC
+------------------------------------------------------------------------
+- Graph Construction: `buildGraph()` reads lines configuration and builds a standard adjacency list map representation `Record<string, GraphEdge[]>`, where each edge contains target `stationId` and `lineId`.
+- Pathfinder: `findRoute()` runs a Breadth-First Search (BFS) to find the shortest path (minimum stops). 
+  - To handle multiple routes with the same number of stops, it uses a tie-breaker prioritizing the path with the fewest line interchanges (transfers).
+  - It breaks the final path into distinct segments, each detailing the line used and stations visited, and identifies transfer stations (e.g. Sadat, Attaba, Al-Shohadaa).
+- Ticket Fare: Computes ticket prices based on the number of traversed stations:
+  - 1 to 9 stops = 9 EGP
+  - 10 to 16 stops = 12 EGP
+  - 17 or more stops = 15 EGP
+- Estimated Time: Estimations are calculated as:
+  - (number of stops * 2 minutes) + (number of line interchanges * 4 minutes)
+
+4. DESIGN AESTHETICS & ACCESSIBILITY
+------------------------------------------------------------------------
+- Brand Palette (Official Cairo Metro stars emblem):
+  - Metro Red (#C01010): Primary accent, Line 1, M Logo, buttons.
+  - Steel Blue (#0050A0): Secondary accent, Line 2, panel borders.
+  - Mid Blue (#3070A0): Tertiary accent, Line 3, history log indicator.
+  - Sand (#C0A080): Header backgrounds and field borders.
+  - Off-White (#F0F0F0): Light-themed container background.
+- Background Pattern: A custom CSS repeating rub-el-hizb (8-pointed star) background motif styled in Tailwind utility classes (`star-pattern`).
+- Bilingual Layout: The UI dynamically switches between LTR (English) and RTL (Arabic) with correct layout alignment, directionality (`dir="rtl"`), and mirrored icons (e.g. swap arrow, timeline nodes).
+- Accessibility (A11y): Autocomplete pickers support full keyboard navigation (Up/Down to navigate, Enter to choose, Escape to close, Screen Reader instructions, and ARIA attributes like `aria-expanded`, `aria-selected`, and `role="listbox"/"option"`).
+
+5. TESTING STRATEGY
+------------------------------------------------------------------------
+- Unit & Component Testing: Vitest executes 16 test cases covering BFS routing, fare brackets, time estimations, and integration rendering flows. Map dependencies are mocked for tests to isolate DOM rendering from WebGL rendering errors.
+- End-to-End Testing: Playwright launches the Vite dev server and triggers a real Chromium session. It simulates a user selecting Helwan and Maadi, swapping directions, checking stats updates, and toggling Arabic translations.

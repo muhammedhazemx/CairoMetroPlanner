@@ -1,0 +1,123 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@200..900&family=Inter:wght@100..900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg: 233 224 210;         /* #E9E0D2 */
+    --surface: 247 242 234;    /* #F7F2EA */
+    --surface-2: 239 231 216;  /* #EFE7D8 */
+    --border: 192 160 128;     /* #C0A080 */
+    --text: 30 27 22;          /* #1E1B16 */
+    --text-muted: 107 98 86;   /* #6B6256 */
+    --brand-red: 192 16 16;    /* #C01010 */
+    --brand-blue: 0 80 160;    /* #0050A0 */
+    --brand-blue-mid: 48 112 160; /* #3070A0 */
+    --brand-gold: 200 144 47;  /* #C8902F */
+  }
+
+  .dark {
+    --bg: 20 22 26;            /* #14161A */
+    --surface: 30 33 38;       /* #1E2126 */
+    --surface-2: 38 42 48;     /* #262A30 */
+    --border: 58 63 71;        /* #3A3F47 */
+    --text: 240 240 240;       /* #F0F0F0 */
+    --text-muted: 166 173 183; /* #A6ADB7 */
+    --brand-red: 229 72 77;    /* #E5484D */
+    --brand-blue: 62 132 214;  /* #3E84D6 */
+    --brand-blue-mid: 91 149 214; /* #5B95D6 */
+    --brand-gold: 224 169 59;  /* #E0A93B */
+  }
+
+  html, body, #root {
+    @apply h-[100dvh] w-screen overflow-hidden;
+  }
+
+  body {
+    @apply bg-bg text-text antialiased;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Cairo', 'Inter', sans-serif;
+  }
+}
+
+/* Custom Scrollbar for dropdowns and timelines */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-border rounded-full hover:bg-border/80;
+}
+
+/* Islamic 8-pointed star repeating subtle background pattern */
+.star-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='none' stroke='%23C0A080' stroke-width='1' opacity='0.3'%3E%3Crect x='25' y='25' width='30' height='30' rx='2' transform='rotate(0 40 40)'/%3E%3Crect x='25' y='25' width='30' height='30' rx='2' transform='rotate(45 40 40)'/%3E%3Ccircle cx='40' cy='40' r='4'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 80px 80px;
+}
+
+/* Custom Leaflet Map Styling fixes */
+.leaflet-container {
+  font-family: 'Inter', sans-serif !important;
+  background-color: rgb(var(--bg)) !important; /* Cairo sand field fallback */
+}
+
+.leaflet-bar {
+  border: 1px solid rgb(var(--border)) !important;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1) !important;
+  border-radius: 8px !important;
+  overflow: hidden;
+}
+
+.leaflet-bar a {
+  background-color: rgb(var(--surface)) !important;
+  color: rgb(var(--text)) !important;
+  border-bottom: 1px solid rgb(var(--border)) !important;
+  transition: background-color 150ms;
+}
+
+.leaflet-bar a:hover {
+  background-color: rgb(var(--surface-2)) !important;
+  color: rgb(var(--brand-red)) !important;
+}
+
+/* Leaflet Popup customization */
+.leaflet-popup-content-wrapper {
+  background: rgb(var(--surface)) !important;
+  color: rgb(var(--text)) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1) !important;
+  border: 1px solid rgb(var(--border));
+}
+
+.leaflet-popup-tip {
+  background: rgb(var(--surface)) !important;
+  border: 1px solid rgb(var(--border));
+}
+
+/* Animated Dash Flow for Metro Routes */
+.route-flow-animation {
+  stroke-dashoffset: 16;
+  animation: dash-flow 1s linear infinite;
+}
+
+@keyframes dash-flow {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-flow-animation {
+    animation: none;
+  }
+}
