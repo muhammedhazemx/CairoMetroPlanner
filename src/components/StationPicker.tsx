@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Search, ChevronDown, X } from 'lucide-react';
 import type { Station } from '../types/station';
 import { useTranslation } from '../i18n/useTranslation';
+import { LineBadge } from './LineBadge';
 
 interface StationPickerProps {
   label: string;
@@ -24,6 +25,7 @@ export const StationPicker: React.FC<StationPickerProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [focusedIndex, setFocusedIndex] = useState(-1);
+  const [lineFilter, setLineFilter] = useState<'all' | 'L1' | 'L2' | 'L3'>('all');
 
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -34,15 +36,19 @@ export const StationPicker: React.FC<StationPickerProps> = ({
     return stations.find(s => s.id === selectedId) || null;
   }, [selectedId, stations]);
 
-  // Filter stations based on search query (EN and AR names)
+  // Filter stations based on search query and line filter
   const filteredStations = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
-    if (!query) return stations;
-    return stations.filter(s =>
+    let filtered = stations;
+    if (lineFilter !== 'all') {
+      filtered = filtered.filter(s => s.lines.includes(lineFilter));
+    }
+    if (!query) return filtered;
+    return filtered.filter(s =>
       s.nameEn.toLowerCase().includes(query) ||
       s.nameAr.includes(query)
     );
-  }, [searchQuery, stations]);
+  }, [searchQuery, stations, lineFilter]);
 
   // Get displayed text in input
   const displayedValue = useMemo(() => {
@@ -136,12 +142,37 @@ export const StationPicker: React.FC<StationPickerProps> = ({
 
   return (
     <div className="flex flex-col w-full relative" ref={containerRef}>
-      <label
-        htmlFor={`${id}-input`}
-        className="text-sm font-medium text-text mb-1 flex justify-between items-center"
-      >
-        <span>{label}</span>
-      </label>
+      <div className="flex justify-between items-center mb-1">
+        <label
+          htmlFor={`${id}-input`}
+          className="text-sm font-medium text-text"
+        >
+          {label}
+        </label>
+        <div className={`flex gap-1 bg-surface-2 p-1 rounded-lg border border-border ${isRtl ? 'flex-row-reverse' : 'flex-row'}`}>
+          {(['all', 'L1', 'L2', 'L3'] as const).map(filter => {
+            const isActive = lineFilter === filter;
+            let bgClass = 'bg-transparent text-text-muted hover:text-text';
+            if (isActive) {
+              if (filter === 'all') bgClass = 'bg-surface shadow-sm text-text font-medium';
+              else if (filter === 'L1') bgClass = 'bg-line-l1 text-white font-medium shadow-sm';
+              else if (filter === 'L2') bgClass = 'bg-line-l2 text-white font-medium shadow-sm';
+              else if (filter === 'L3') bgClass = 'bg-line-l3 text-white font-medium shadow-sm';
+            }
+            const labelMap = { all: t.filterAll, L1: t.filterL1, L2: t.filterL2, L3: t.filterL3 };
+            return (
+              <button
+                key={filter}
+                type="button"
+                onClick={(e) => { e.preventDefault(); setLineFilter(filter); }}
+                className={`px-2 py-0.5 text-[10px] rounded-md transition-colors ${bgClass}`}
+              >
+                {labelMap[filter]}
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
       <div
         className={`relative flex items-center rounded-lg border border-border bg-surface transition-all duration-200 focus-within:ring-2 focus-within:ring-brand-red/20 focus-within:border-brand-red`}
@@ -242,17 +273,26 @@ export const StationPicker: React.FC<StationPickerProps> = ({
                       : 'text-text'
                   }`}
                 >
-                  <span>{displayName}</span>
-                  {language === 'ar' && station.nameEn !== station.nameAr && (
-                    <span className="text-xs text-text-muted font-normal">
-                      {station.nameEn}
-                    </span>
-                  )}
-                  {language === 'en' && station.nameAr !== station.nameEn && (
-                    <span className="text-xs text-text-muted font-normal">
-                      {station.nameAr}
-                    </span>
-                  )}
+                  <div className="flex flex-col">
+                    <div className="flex items-center gap-2">
+                      <span>{displayName}</span>
+                      <div className="flex gap-1">
+                        {station.lines.map(lineId => (
+                          <LineBadge key={lineId} lineId={lineId} className="!text-[9px] !px-1.5 !py-0" />
+                        ))}
+                      </div>
+                    </div>
+                    {language === 'ar' && station.nameEn !== station.nameAr && (
+                      <span className="text-xs text-text-muted font-normal mt-0.5">
+                        {station.nameEn}
+                      </span>
+                    )}
+                    {language === 'en' && station.nameAr !== station.nameEn && (
+                      <span className="text-xs text-text-muted font-normal mt-0.5">
+                        {station.nameAr}
+                      </span>
+                    )}
+                  </div>
                 </li>
               );
             })

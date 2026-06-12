@@ -30,7 +30,11 @@ export const en = {
   line3Name: "Line 3 (Attaba - Al-Ahram)",
   close: "Close",
   interchangeCallout: "Interchange Station",
-  keyboardInstructions: "Use Up/Down arrows to navigate, Enter to select, Escape to close."
+  keyboardInstructions: "Use Up/Down arrows to navigate, Enter to select, Escape to close.",
+  filterAll: "All",
+  filterL1: "Line 1",
+  filterL2: "Line 2",
+  filterL3: "Line 3"
 };
 
 export type Translations = typeof en;

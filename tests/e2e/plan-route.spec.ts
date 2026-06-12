@@ -12,14 +12,14 @@ test.describe('Cairo Metro Route Planner E2E Flow', () => {
     await expect(title).toContainText('Cairo Metro Route Planner');
 
     // 2. Open origin picker and select "Helwan"
-    const originInput = page.getByPlaceholder('Select Origin Station');
+    const originInput = page.locator('#origin-input');
     await originInput.click();
-    await page.locator('#origin-option-10_HLW_METRO').click();
+    await page.locator('#origin-option-L1_HEL').click();
 
     // 3. Open destination picker and select "Maadi"
-    const destInput = page.getByPlaceholder('Select Destination Station');
+    const destInput = page.locator('#destination-input');
     await destInput.click();
-    await page.locator('#destination-option-23_MAD_METRO').click();
+    await page.locator('#destination-option-L1_MAD').click();
 
     // 4. Verify route details cards appear
     // Stops count card (should be 10 stops)

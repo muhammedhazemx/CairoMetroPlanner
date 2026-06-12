@@ -32,5 +32,9 @@ export const ar: Translations = {
   line3Name: "الخط الثالث (العتبة - الأهرام)",
   close: "إغلاق",
   interchangeCallout: "محطة تبادلية",
-  keyboardInstructions: "استخدم الأسهم لأعلى/لأسفل للتنقل، Enter للاختيار، Escape للإغلاق."
+  keyboardInstructions: "استخدم الأسهم لأعلى/لأسفل للتنقل، Enter للاختيار، Escape للإغلاق.",
+  filterAll: "الكل",
+  filterL1: "الخط 1",
+  filterL2: "الخط 2",
+  filterL3: "الخط 3"
 };

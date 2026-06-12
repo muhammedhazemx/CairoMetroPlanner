@@ -73,7 +73,7 @@ describe('Cairo Metro Route Planner Integration Flow', () => {
     });
 
     // Select "Helwan" from the options by its direct LI ID
-    const helwanOption = document.getElementById('origin-option-10_HLW_METRO');
+    const helwanOption = document.getElementById('origin-option-L1_HEL');
     expect(helwanOption).not.toBeNull();
     fireEvent.click(helwanOption!);
 
@@ -92,7 +92,7 @@ describe('Cairo Metro Route Planner Integration Flow', () => {
     });
 
     // Select "Maadi" from the options
-    const maadiOption = document.getElementById('destination-option-23_MAD_METRO');
+    const maadiOption = document.getElementById('destination-option-L1_MAD');
     expect(maadiOption).not.toBeNull();
     fireEvent.click(maadiOption!);
 
@@ -120,6 +120,31 @@ describe('Cairo Metro Route Planner Integration Flow', () => {
     await waitFor(() => {
       expect(originInput).toHaveAttribute('placeholder', 'Maadi');
       expect(destInput).toHaveAttribute('placeholder', 'Helwan');
+    });
+  });
+
+  it('filters stations when selecting a line in the station picker', async () => {
+    render(<App />);
+
+    const originInput = document.getElementById('origin-input') as HTMLInputElement;
+    fireEvent.focus(originInput);
+
+    await waitFor(() => {
+      expect(originInput).toHaveAttribute('aria-expanded', 'true');
+    });
+
+    // Check that Helwan (L1) and Adly Mansour (L3) are in the list
+    expect(document.getElementById('origin-option-L1_HEL')).not.toBeNull();
+    expect(document.getElementById('origin-option-L3_ADL')).not.toBeNull();
+
+    // Click the "Line 3" filter button
+    const l3FilterBtn = screen.getAllByRole('button', { name: 'Line 3' })[0];
+    fireEvent.click(l3FilterBtn);
+
+    // After filtering, Helwan should be gone, Adly Mansour should remain
+    await waitFor(() => {
+      expect(document.getElementById('origin-option-L1_HEL')).toBeNull();
+      expect(document.getElementById('origin-option-L3_ADL')).not.toBeNull();
     });
   });
 });

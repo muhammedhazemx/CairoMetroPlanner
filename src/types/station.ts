@@ -4,4 +4,5 @@ export interface Station {
   nameAr: string;
   lat: number;
   lon: number;
+  lines: string[];
 }

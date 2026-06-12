@@ -5,4 +5,5 @@ export interface Line {
   color: string;
   stations: string[]; // station IDs in order
   shapePoints: [number, number][]; // lat, lon for map rendering
+  paths?: string[][]; // continuous paths for the graph builder (handles branches)
 }
